@@ -1,77 +1,77 @@
-# XML Technologies: Complete Study Guide
+# Technologies XML : Guide d'étude complet
 
-> Summary of the course *02-Technologies_XML* (XML, DTD, XSD, Namespaces, XPath, CSS, XSLT, XQuery), focused on **code you can read, run and modify**.
+> Résumé du cours *02-Technologies_XML* (XML, DTD, XSD, Espaces de noms, XPath, CSS, XSLT, XQuery), centré sur du **code que vous pouvez lire, exécuter et modifier**.
 
 ---
 
-## Table of Contents
+## Table des matières
 
-1. [Big Picture](#1-big-picture)
-2. [XML: Structure and Syntax](#2-xml-structure-and-syntax)
-3. [DTD: Document Type Definition](#3-dtd-document-type-definition)
-4. [XSD: XML Schema Definition](#4-xsd-xml-schema-definition)
-5. [Namespaces](#5-namespaces)
+1. [Vue d'ensemble](#1-vue-densemble)
+2. [XML : structure et syntaxe](#2-xml--structure-et-syntaxe)
+3. [DTD : Document Type Definition](#3-dtd--document-type-definition)
+4. [XSD : XML Schema Definition](#4-xsd--xml-schema-definition)
+5. [Espaces de noms](#5-espaces-de-noms)
 6. [XPath](#6-xpath)
-7. [CSS on XML](#7-css-on-xml)
+7. [CSS sur XML](#7-css-sur-xml)
 8. [XSLT](#8-xslt)
 9. [XQuery](#9-xquery)
-10. [Cheat Sheets](#10-cheat-sheets)
-11. [Corrections to the Slides](#11-corrections-to-the-slides)
-12. [Practice Plan](#12-practice-plan)
+10. [Aide-mémoire](#10-aide-mémoire)
+11. [Corrections des diapositives](#11-corrections-des-diapositives)
+12. [Plan d'entraînement](#12-plan-dentraînement)
 
 ---
 
-## 1. Big Picture
+## 1. Vue d'ensemble
 
-XML **describes data** in a form both humans and machines can read. It stores *data + metadata* (the tags). Every other technology in the course works on the same XML file:
+XML **décrit des données** sous une forme lisible à la fois par les humains et par les machines. Il stocke des *données + des métadonnées* (les balises). Toutes les autres technologies du cours travaillent sur le même fichier XML :
 
 ```mermaid
 flowchart LR
-    XML["XML document<br/>(data + tags)"]
-    DTD["DTD<br/>simple grammar"]
-    XSD["XSD<br/>typed grammar"]
-    XP["XPath<br/>select nodes"]
-    XSLT["XSLT<br/>transform"]
-    XQ["XQuery<br/>query"]
-    CSS["CSS<br/>style"]
-    OUT["HTML / XML / text"]
+    XML["Document XML<br/>(données + balises)"]
+    DTD["DTD<br/>grammaire simple"]
+    XSD["XSD<br/>grammaire typée"]
+    XP["XPath<br/>sélectionner des nœuds"]
+    XSLT["XSLT<br/>transformer"]
+    XQ["XQuery<br/>interroger"]
+    CSS["CSS<br/>mettre en forme"]
+    OUT["HTML / XML / texte"]
 
-    DTD -- validates --> XML
-    XSD -- validates --> XML
-    XP -- addresses --> XML
-    XSLT -- uses XPath --> XP
-    XQ -- uses XPath --> XP
+    DTD -- valide --> XML
+    XSD -- valide --> XML
+    XP -- adresse --> XML
+    XSLT -- utilise XPath --> XP
+    XQ -- utilise XPath --> XP
     XML --> XSLT --> OUT
     XML --> CSS
     XML --> XQ
 ```
 
-| Question | Tool |
+| Question | Outil |
 |---|---|
-| How do I write structured data? | **XML** |
-| Is the document *valid*? | **DTD** or **XSD** |
-| How do I point at part of it? | **XPath** |
-| How do I turn it into HTML/other XML? | **XSLT** |
-| How do I query it like a database? | **XQuery** |
-| How do I make it look nice in a browser? | **CSS** |
+| Comment écrire des données structurées ? | **XML** |
+| Le document est-il *valide* ? | **DTD** ou **XSD** |
+| Comment désigner une partie du document ? | **XPath** |
+| Comment le transformer en HTML ou en autre XML ? | **XSLT** |
+| Comment l'interroger comme une base de données ? | **XQuery** |
+| Comment l'embellir dans un navigateur ? | **CSS** |
 
-**Two levels of correctness:**
+**Deux niveaux de correction :**
 
 ```mermaid
 flowchart LR
-    A[Text file] -->|syntax rules OK| B[Well-formed]
-    B -->|respects DTD or XSD| C[Valid]
+    A[Fichier texte] -->|règles de syntaxe respectées| B[Bien formé]
+    B -->|respecte une DTD ou un XSD| C[Valide]
 ```
 
 ---
 
-## 2. XML: Structure and Syntax
+## 2. XML : structure et syntaxe
 
-### 2.1 Running example (used through the whole guide)
+### 2.1 Exemple fil rouge (utilisé dans tout le guide)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Description of a phone book -->
+<!-- Description d'un annuaire -->
 <annuaire type="pages blanches">
   <entree>
     <nom>Paul Lafargue</nom>
@@ -84,29 +84,29 @@ flowchart LR
 </annuaire>
 ```
 
-### 2.2 Anatomy
+### 2.2 Anatomie
 
-| Part | Example | Meaning |
+| Partie | Exemple | Signification |
 |---|---|---|
-| **Prolog** (entête) | `<?xml version="1.0" encoding="UTF-8"?>` | Version (1.0 or 1.1), encoding (default UTF-8), optional `standalone` |
-| **Root** (racine) | `<annuaire>` | Exactly **one** per document, right after the prolog |
-| **Element / tag** (balise) | `<nom>Paul</nom>` | Paired tag; content between |
-| **Empty element** | `<br/>` | Self-closing tag |
-| **Attribute** | `type="pages blanches"` | Extra info on a tag |
-| **CDATA** | `<![CDATA[ a < b & c ]]>` | Raw text, no escaping needed |
-| **Comment** | `<!-- ... -->` | For humans |
+| **Prologue** (entête) | `<?xml version="1.0" encoding="UTF-8"?>` | Version (1.0 ou 1.1), encodage (UTF-8 par défaut), `standalone` optionnel |
+| **Racine** | `<annuaire>` | **Une seule** par document, juste après le prologue |
+| **Élément / balise** | `<nom>Paul</nom>` | Balise par paire ; contenu entre les deux |
+| **Élément vide** | `<br/>` | Balise auto-fermante |
+| **Attribut** | `type="pages blanches"` | Information supplémentaire sur une balise |
+| **CDATA** | `<![CDATA[ a < b & c ]]>` | Texte brut, sans échappement nécessaire |
+| **Commentaire** | `<!-- ... -->` | Destiné aux humains |
 
-### 2.3 The tree view
+### 2.3 Vue en arbre
 
 ```mermaid
 graph TD
     A["annuaire<br/>@type = pages blanches"]
     A --> E1[entree]
     A --> E2[entree]
-    E1 --> N1["nom: Paul Lafargue"]
-    E1 --> T1["telephone: 06 03 02 01 00"]
-    E2 --> N2["nom: Lorédan Larchey"]
-    E2 --> T2["telephone: 06 00 01 02 03"]
+    E1 --> N1["nom : Paul Lafargue"]
+    E1 --> T1["telephone : 06 03 02 01 00"]
+    E2 --> N2["nom : Lorédan Larchey"]
+    E2 --> T2["telephone : 06 00 01 02 03"]
 ```
 
 ```
@@ -119,16 +119,16 @@ annuaire  (@type)
     └── telephone  → "06 00 01 02 03"
 ```
 
-### 2.4 Well-formedness checklist
+### 2.4 Liste de contrôle : document bien formé
 
-- One root element only
-- Every opening tag is closed, and tags are properly nested (`<a><b></b></a>`, never `<a><b></a></b>`)
-- Attribute values are quoted
-- Attribute names are unique inside one tag
-- Names are case-sensitive
-- Special characters escaped:
+- Un seul élément racine
+- Chaque balise ouvrante est fermée et les balises sont correctement imbriquées (`<a><b></b></a>`, jamais `<a><b></a></b>`)
+- Les valeurs d'attributs sont entre guillemets
+- Les noms d'attributs sont uniques dans une même balise
+- Les noms sont sensibles à la casse
+- Les caractères spéciaux sont échappés :
 
-| Char | Escape |
+| Caractère | Échappement |
 |---|---|
 | `<` | `&lt;` |
 | `>` | `&gt;` |
@@ -137,18 +137,18 @@ annuaire  (@type)
 | `'` | `&apos;` |
 
 ```xml
-<!-- WRONG --> <note>5 < 6 & 7 > 3</note>
-<!-- RIGHT --> <note>5 &lt; 6 &amp; 7 &gt; 3</note>
-<!-- RIGHT --> <note><![CDATA[5 < 6 & 7 > 3]]></note>
+<!-- FAUX -->   <note>5 < 6 & 7 > 3</note>
+<!-- CORRECT --> <note>5 &lt; 6 &amp; 7 &gt; 3</note>
+<!-- CORRECT --> <note><![CDATA[5 < 6 & 7 > 3]]></note>
 ```
 
 ---
 
-## 3. DTD: Document Type Definition
+## 3. DTD : Document Type Definition
 
-A DTD describes: **the list of tags**, **their attributes**, **their organisation**. *Validation* checks that an XML file respects it.
+Une DTD décrit : **la liste des balises**, **leurs attributs**, **leur organisation**. La *validation* vérifie qu'un fichier XML la respecte.
 
-### 3.1 The DTD of our annuaire
+### 3.1 La DTD de notre annuaire
 
 ```dtd
 <!ELEMENT annuaire (entree*)>
@@ -158,70 +158,70 @@ A DTD describes: **the list of tags**, **their attributes**, **their organisatio
 <!ELEMENT telephone (#PCDATA)>
 ```
 
-Reading it out loud:
+Lecture à voix haute :
 
-- `annuaire` contains **zero or more** `entree`
-- `annuaire` has an attribute `type` (text), default empty
-- `entree` contains one `nom` **then** zero or more `telephone`
-- `nom` and `telephone` contain only text
+- `annuaire` contient **zéro ou plusieurs** `entree`
+- `annuaire` possède un attribut `type` (texte), vide par défaut
+- `entree` contient un `nom` **puis** zéro ou plusieurs `telephone`
+- `nom` et `telephone` ne contiennent que du texte
 
-### 3.2 Element declarations
+### 3.2 Déclarations d'éléments
 
 | Type | DTD | XML |
 |---|---|---|
-| Empty | `<!ELEMENT elt EMPTY>` | `<elt/>` |
-| Text | `<!ELEMENT elt (#PCDATA)>` | `<elt>text</elt>` |
-| Children | `<!ELEMENT elt (a, b)>` | `<elt><a/><b/></elt>` |
-| Anything | `<!ELEMENT elt ANY>` | any content |
+| Vide | `<!ELEMENT elt EMPTY>` | `<elt/>` |
+| Texte | `<!ELEMENT elt (#PCDATA)>` | `<elt>texte</elt>` |
+| Enfants | `<!ELEMENT elt (a, b)>` | `<elt><a/><b/></elt>` |
+| N'importe quoi | `<!ELEMENT elt ANY>` | contenu libre |
 
-### 3.3 Occurrence and composition operators
+### 3.3 Opérateurs d'occurrence et de composition
 
-| Symbol | Meaning | Example |
+| Symbole | Signification | Exemple |
 |---|---|---|
-| *(none)* | exactly 1 | `(nom)` |
-| `?` | 0 or 1 | `(nom?)` |
-| `*` | 0 or more | `(entree*)` |
-| `+` | 1 or more | `(entree+)` |
-| `,` | sequence (ordered) | `(nom, telephone)` |
-| `\|` | choice (one of) | `(email \| telephone)` |
-| `( )` | grouping | `((a, b)*)` |
+| *(aucun)* | exactement 1 | `(nom)` |
+| `?` | 0 ou 1 | `(nom?)` |
+| `*` | 0 ou plus | `(entree*)` |
+| `+` | 1 ou plus | `(entree+)` |
+| `,` | séquence (ordonnée) | `(nom, telephone)` |
+| `\|` | choix (l'un des deux) | `(email \| telephone)` |
+| `( )` | regroupement | `((a, b)*)` |
 
-**Quick test:** which of these are valid for `<!ELEMENT entree (nom, telephone*)>`?
+**Test rapide :** lesquels sont valides pour `<!ELEMENT entree (nom, telephone*)>` ?
 
 ```xml
-<entree><nom>A</nom></entree>                                   <!-- valid: 0 phones -->
-<entree><nom>A</nom><telephone>1</telephone><telephone>2</telephone></entree>  <!-- valid -->
-<entree><telephone>1</telephone><nom>A</nom></entree>           <!-- INVALID: wrong order -->
-<entree></entree>                                               <!-- INVALID: nom missing -->
+<entree><nom>A</nom></entree>                                   <!-- valide : 0 téléphone -->
+<entree><nom>A</nom><telephone>1</telephone><telephone>2</telephone></entree>  <!-- valide -->
+<entree><telephone>1</telephone><nom>A</nom></entree>           <!-- INVALIDE : mauvais ordre -->
+<entree></entree>                                               <!-- INVALIDE : nom manquant -->
 ```
 
-### 3.4 Attributes
+### 3.4 Attributs
 
 ```dtd
-<!ATTLIST element-name attribute-name type constraint "default">
+<!ATTLIST nom-element nom-attribut type contrainte "défaut">
 ```
 
 ```dtd
-<!ATTLIST livre type (roman|essai|poesie) "roman">   <!-- enumeration + default -->
-<!ATTLIST ecrivain identifiant ID    #REQUIRED>       <!-- unique key -->
-<!ATTLIST auteur   identifiant IDREF #REQUIRED>       <!-- reference to a key -->
+<!ATTLIST livre type (roman|essai|poesie) "roman">   <!-- énumération + valeur par défaut -->
+<!ATTLIST ecrivain identifiant ID    #REQUIRED>       <!-- clé unique -->
+<!ATTLIST auteur   identifiant IDREF #REQUIRED>       <!-- référence vers une clé -->
 ```
 
-| Constraint | Meaning |
+| Contrainte | Signification |
 |---|---|
-| `#REQUIRED` | attribute is mandatory |
-| `#IMPLIED` | attribute is optional |
-| `#FIXED "v"` | value is always `v` |
+| `#REQUIRED` | l'attribut est obligatoire |
+| `#IMPLIED` | l'attribut est optionnel |
+| `#FIXED "v"` | la valeur est toujours `v` |
 
-### 3.5 ID / IDREF = primary key / foreign key
+### 3.5 ID / IDREF = clé primaire / clé étrangère
 
 ```mermaid
 graph LR
-    subgraph Writers
-    W1["ecrivain id=A: E1"]
-    W2["ecrivain id=B: E2"]
+    subgraph Écrivains
+    W1["ecrivain id=A : E1"]
+    W2["ecrivain id=B : E2"]
     end
-    subgraph Books
+    subgraph Livres
     L1["livre → auteur idref=A"]
     L2["livre → auteur idref=B"]
     L3["livre → auteur idref=A"]
@@ -249,29 +249,29 @@ graph LR
 </bibliotheque>
 ```
 
-> Note: an `ID` value must start with a letter or underscore (`A`, `id1`), not a digit alone.
+> Remarque : une valeur d'`ID` doit commencer par une lettre ou un tiret bas (`A`, `id1`), pas par un chiffre seul.
 
-### 3.6 Entities (aliases)
+### 3.6 Entités (alias)
 
-| Kind | Declaration | Use |
+| Sorte | Déclaration | Utilisation |
 |---|---|---|
-| General | `<!ENTITY nom "valeur">` | `<element>&nom;</element>` in XML |
-| Parameter | `<!ENTITY % types "(roman\|essai\|poesie)">` | `<!ATTLIST livre type %types; "">` inside the DTD |
-| External | `<!ENTITY nom SYSTEM "URI">` | content lives in another file |
+| Générale | `<!ENTITY nom "valeur">` | `<element>&nom;</element>` dans le XML |
+| Paramètre | `<!ENTITY % types "(roman\|essai\|poesie)">` | `<!ATTLIST livre type %types; "">` dans la DTD |
+| Externe | `<!ENTITY nom SYSTEM "URI">` | le contenu se trouve dans un autre fichier |
 
-When using entities, `standalone` in the prolog should be `no`.
+Quand on utilise des entités, `standalone` dans le prologue doit valoir `no`.
 
-### 3.7 Attaching a DTD to an XML file
+### 3.7 Rattacher une DTD à un fichier XML
 
 ```mermaid
 flowchart TD
-    A[DOCTYPE placed right after the prolog] --> B{Where is the DTD?}
-    B -->|inside the XML| C["Internal DTD<br/>&lt;!DOCTYPE root [ ... ]&gt;"]
-    B -->|own file, private| D["External SYSTEM<br/>&lt;!DOCTYPE root SYSTEM 'file.dtd'&gt;"]
-    B -->|public standard| E["External PUBLIC<br/>&lt;!DOCTYPE root PUBLIC 'FPI' 'URI'&gt;"]
+    A[DOCTYPE placé juste après le prologue] --> B{Où se trouve la DTD ?}
+    B -->|dans le XML| C["DTD interne<br/>&lt;!DOCTYPE racine [ ... ]&gt;"]
+    B -->|fichier à part, privée| D["Externe SYSTEM<br/>&lt;!DOCTYPE racine SYSTEM 'fichier.dtd'&gt;"]
+    B -->|norme publique| E["Externe PUBLIC<br/>&lt;!DOCTYPE racine PUBLIC 'FPI' 'URI'&gt;"]
 ```
 
-**Internal DTD (full working example):**
+**DTD interne (exemple complet fonctionnel) :**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -290,7 +290,7 @@ flowchart TD
 </bibliotheque>
 ```
 
-**External:**
+**Externe :**
 
 ```xml
 <!DOCTYPE bibliotheque SYSTEM "bibliotheque.dtd">
@@ -298,28 +298,28 @@ flowchart TD
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 ```
 
-The name after `DOCTYPE` **must equal the root element name**.
+Le nom qui suit `DOCTYPE` **doit être identique au nom de l'élément racine**.
 
-### 3.8 Limits of DTD (why XSD exists)
+### 3.8 Limites des DTD (pourquoi XSD existe)
 
-- No real data types (everything is text)
-- Not written in XML syntax
-- Weak namespace support
-- Occurrences limited to `? * +`
+- Pas de vrais types de données (tout est du texte)
+- Pas écrite en syntaxe XML
+- Support faible des espaces de noms
+- Occurrences limitées à `? * +`
 
 ---
 
-## 4. XSD: XML Schema Definition
+## 4. XSD : XML Schema Definition
 
-An XSD is an **XML document** that describes another XML document. Advantages over DTD:
+Un XSD est un **document XML** qui décrit un autre document XML. Avantages par rapport à la DTD :
 
-- Rich data types (boolean, integer, date, duration, 40+ built-ins)
-- Create new types from existing ones (restriction, extension, list, union)
-- Inheritance between complex types
-- Any occurrence count (`minOccurs="5"`)
-- Namespace-aware
+- Types de données riches (booléen, entier, date, durée, plus de 40 types prédéfinis)
+- Création de nouveaux types à partir de types existants (restriction, extension, liste, union)
+- Héritage entre types complexes
+- Nombre d'occurrences quelconque (`minOccurs="5"`)
+- Gestion des espaces de noms
 
-### 4.1 Skeleton
+### 4.1 Squelette
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -328,36 +328,36 @@ An XSD is an **XML document** that describes another XML document. Advantages ov
             xmlns:tns="http://www.example.org/bibliotheque"
             elementFormDefault="qualified">
 
-    <!-- types and elements go here -->
+    <!-- les types et les éléments se placent ici -->
 
 </xsd:schema>
 ```
 
-| Attribute | Role |
+| Attribut | Rôle |
 |---|---|
-| `xmlns:xsd` | The W3C schema vocabulary (`xsd:` prefix; `xs:` is also common) |
-| `targetNamespace` | Namespace of the things this XSD defines |
-| `xmlns:tns` | Prefix for referring to our own types ("this namespace") |
-| `elementFormDefault="qualified"` | Elements in the XML must carry the namespace prefix |
+| `xmlns:xsd` | Le vocabulaire W3C des schémas (préfixe `xsd:` ; `xs:` est aussi courant) |
+| `targetNamespace` | Espace de noms de ce que ce XSD définit |
+| `xmlns:tns` | Préfixe pour référencer nos propres types (« this namespace ») |
+| `elementFormDefault="qualified"` | Les éléments du XML doivent porter le préfixe de l'espace de noms |
 
-### 4.2 The type system
+### 4.2 Le système de types
 
 ```mermaid
 graph TD
-    T[XSD types]
-    T --> S["simpleType<br/>text only: no attributes, no children"]
-    T --> C["complexType<br/>children and/or attributes"]
-    S --> S1[Built-in: string, int, date, boolean...]
-    S --> S2["Derived by restriction"]
-    S --> S3["Derived by list"]
-    S --> S4["Derived by union"]
-    C --> C1[Empty + attributes]
-    C --> C2[Simple content + attributes]
-    C --> C3[Child elements + attributes]
-    C --> C4[Mixed: text + children]
+    T[Types XSD]
+    T --> S["simpleType<br/>texte seulement : ni attributs, ni enfants"]
+    T --> C["complexType<br/>enfants et/ou attributs"]
+    S --> S1[Prédéfinis : string, int, date, boolean...]
+    S --> S2["Dérivés par restriction"]
+    S --> S3["Dérivés par liste"]
+    S --> S4["Dérivés par union"]
+    C --> C1[Vide + attributs]
+    C --> C2[Contenu simple + attributs]
+    C --> C3[Éléments enfants + attributs]
+    C --> C4[Mixte : texte + enfants]
 ```
 
-**Built-in type families** (slide 34):
+**Familles de types prédéfinis** (diapositive 34) :
 
 ```
 string ── normalizedString ── token ── language, NMTOKEN, Name ── NCName ── ID, IDREF, ENTITY
@@ -367,19 +367,19 @@ dateTime, date, time, duration, gYear, gMonth, gDay ...
 boolean, float, double, anyURI, QName, base64Binary, hexBinary
 ```
 
-### 4.3 Simple types
+### 4.3 Types simples
 
-**Restriction** (add constraints, called *facets*):
+**Restriction** (ajout de contraintes, appelées *facettes*) :
 
 ```xml
-<!-- Email by regular expression -->
+<!-- E-mail par expression régulière -->
 <xsd:simpleType name="mailType">
   <xsd:restriction base="xsd:string">
     <xsd:pattern value="[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,9}"/>
   </xsd:restriction>
 </xsd:simpleType>
 
-<!-- Age between 1 and 100 -->
+<!-- Âge entre 1 et 100 -->
 <xsd:simpleType name="ageType">
   <xsd:restriction base="xsd:integer">
     <xsd:minInclusive value="1"/>
@@ -387,7 +387,7 @@ boolean, float, double, anyURI, QName, base64Binary, hexBinary
   </xsd:restriction>
 </xsd:simpleType>
 
-<!-- Enumeration -->
+<!-- Énumération -->
 <xsd:simpleType name="sexeTypeChild">
   <xsd:restriction base="xsd:string">
     <xsd:enumeration value="homme"/>
@@ -397,18 +397,18 @@ boolean, float, double, anyURI, QName, base64Binary, hexBinary
 </xsd:simpleType>
 ```
 
-Common facets: `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `minInclusive`, `maxInclusive`, `minExclusive`, `maxExclusive`, `totalDigits`, `fractionDigits`, `whiteSpace`.
+Facettes courantes : `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `minInclusive`, `maxInclusive`, `minExclusive`, `maxExclusive`, `totalDigits`, `fractionDigits`, `whiteSpace`.
 
-**List** (space-separated values):
+**Liste** (valeurs séparées par des espaces) :
 
 ```xml
 <xsd:simpleType name="listeInteger">
   <xsd:list itemType="xsd:integer"/>
 </xsd:simpleType>
-<!-- valid value: "3 14 15 92" -->
+<!-- valeur valide : "3 14 15 92" -->
 ```
 
-**Union** (value may belong to any listed type):
+**Union** (la valeur peut appartenir à l'un des types listés) :
 
 ```xml
 <xsd:simpleType name="union">
@@ -416,9 +416,9 @@ Common facets: `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `mi
 </xsd:simpleType>
 ```
 
-### 4.4 Complex types: four flavours
+### 4.4 Types complexes : quatre variantes
 
-**a) Attributes only, no content**
+**a) Attributs seulement, pas de contenu**
 
 ```xml
 <xsd:complexType name="AdresseOnlyAttributes">
@@ -429,7 +429,7 @@ Common facets: `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `mi
 <!-- <adresse numero="5" rue="Main St" ville="Tunis"/> -->
 ```
 
-**b) Simple content + attributes** (text with attributes)
+**b) Contenu simple + attributs** (texte avec attributs)
 
 ```xml
 <xsd:complexType name="Poids">
@@ -442,7 +442,7 @@ Common facets: `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `mi
 <!-- <poids unite="kg">70</poids> -->
 ```
 
-**c) Child elements (+ attributes)**
+**c) Éléments enfants (+ attributs)**
 
 ```xml
 <xsd:complexType name="person">
@@ -457,7 +457,7 @@ Common facets: `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `mi
 </xsd:complexType>
 ```
 
-**d) Mixed content** (text and elements together)
+**d) Contenu mixte** (texte et éléments ensemble)
 
 ```xml
 <xsd:complexType name="lettreType" mixed="true">
@@ -471,7 +471,7 @@ Common facets: `length`, `minLength`, `maxLength`, `pattern`, `enumeration`, `mi
 </xsd:complexType>
 ```
 
-### 4.5 Order indicators
+### 4.5 Indicateurs d'ordre
 
 ```mermaid
 flowchart LR
@@ -479,24 +479,24 @@ flowchart LR
     s1[A] --> s2[B] --> s3[C]
     end
     subgraph all
-    a1["A, B, C in ANY order"]
+    a1["A, B, C dans N'IMPORTE QUEL ordre"]
     end
     subgraph choice
-    c1["A  OR  B  OR  C (one only)"]
+    c1["A  OU  B  OU  C (un seul)"]
     end
 ```
 
-| Indicator | Rule |
+| Indicateur | Règle |
 |---|---|
-| `<xsd:sequence>` | children in the declared order |
-| `<xsd:all>` | children in any order (each at most once) |
-| `<xsd:choice>` | exactly one of the children |
+| `<xsd:sequence>` | enfants dans l'ordre déclaré |
+| `<xsd:all>` | enfants dans n'importe quel ordre (chacun au plus une fois) |
+| `<xsd:choice>` | exactement un des enfants |
 
-### 4.6 Occurrence indicators
+### 4.6 Indicateurs d'occurrence
 
-`minOccurs` (default **1**) and `maxOccurs` (default **1**). Use `maxOccurs="unbounded"` for infinity. `minOccurs="0"` makes an element optional.
+`minOccurs` (par défaut **1**) et `maxOccurs` (par défaut **1**). Utiliser `maxOccurs="unbounded"` pour l'infini. `minOccurs="0"` rend un élément optionnel.
 
-### 4.7 Attributes in XSD
+### 4.7 Attributs en XSD
 
 ```xml
 <xsd:attribute name="id"    type="xsd:int"   use="required"/>
@@ -505,7 +505,7 @@ flowchart LR
 <xsd:attribute name="old"   type="xsd:string" use="prohibited"/>
 ```
 
-An attribute can only have a **simple** type. It can be defined globally and reused with `ref`:
+Un attribut ne peut avoir qu'un type **simple**. Il peut être défini globalement et réutilisé avec `ref` :
 
 ```xml
 <xsd:attribute name="sexe">
@@ -520,19 +520,19 @@ An attribute can only have a **simple** type. It can be defined globally and reu
   <xsd:complexType>
     <xsd:sequence>...</xsd:sequence>
     <xsd:attribute name="dateMAJ" type="xsd:dateTime"/>
-    <xsd:attribute ref="tns:sexe"/>        <!-- reuse -->
+    <xsd:attribute ref="tns:sexe"/>        <!-- réutilisation -->
   </xsd:complexType>
 </xsd:element>
 ```
 
-### 4.8 Elements: two definition styles
+### 4.8 Éléments : deux styles de définition
 
 ```xml
-<!-- 1) Named type, then reference it -->
+<!-- 1) Type nommé, puis référence -->
 <xsd:complexType name="TypePoids">...</xsd:complexType>
 <xsd:element name="poids" type="tns:TypePoids"/>
 
-<!-- 2) Anonymous type defined inside the element -->
+<!-- 2) Type anonyme défini à l'intérieur de l'élément -->
 <xsd:element name="employee">
   <xsd:complexType>
     <xsd:sequence>
@@ -542,13 +542,13 @@ An attribute can only have a **simple** type. It can be defined globally and reu
 </xsd:element>
 ```
 
-### 4.9 Derivation: extension and restriction of complex types
+### 4.9 Dérivation : extension et restriction de types complexes
 
 ```mermaid
 graph TD
     P["person<br/>name, firstName, old, email, sex + @id"]
     S["salarie<br/>= person + employeur<br/>(EXTENSION)"]
-    M["militaire<br/>= salarie with employeur fixed = 'armee'<br/>(RESTRICTION)"]
+    M["militaire<br/>= salarie avec employeur fixé = 'armee'<br/>(RESTRICTION)"]
     P --> S --> M
 ```
 
@@ -567,7 +567,7 @@ graph TD
   <xsd:complexContent>
     <xsd:restriction base="tns:salarie">
       <xsd:sequence>
-        <!-- must repeat all base elements, narrowing where needed -->
+        <!-- il faut répéter tous les éléments de base, en les restreignant si besoin -->
         <xsd:element name="name" type="xsd:string" minOccurs="5" maxOccurs="unbounded"/>
         <xsd:element name="firstName" type="xsd:string"/>
         <xsd:element name="old" type="tns:ageType"/>
@@ -580,26 +580,26 @@ graph TD
 </xsd:complexType>
 ```
 
-- **extension** adds elements/attributes.
-- **restriction** narrows what is allowed (and must restate the base content).
+- **extension** ajoute des éléments/attributs.
+- **restriction** réduit ce qui est autorisé (et doit réénoncer le contenu de base).
 
-### 4.10 Type visibility
+### 4.10 Visibilité des types
 
-A type is visible to all descendants of the node where it is declared.
+Un type est visible par tous les descendants du nœud où il est déclaré.
 
-- Declared under `<schema>` (global): usable everywhere.
-- Declared inside another element (local/anonymous): usable only there.
+- Déclaré sous `<schema>` (global) : utilisable partout.
+- Déclaré à l'intérieur d'un autre élément (local/anonyme) : utilisable uniquement à cet endroit.
 
-### 4.11 Annotations (comments for humans and tools)
+### 4.11 Annotations (commentaires pour les humains et les outils)
 
 ```xml
 <xsd:annotation>
-  <xsd:documentation>Type representing a soldier</xsd:documentation>  <!-- for people -->
-  <xsd:appinfo>...</xsd:appinfo>                                       <!-- for tools -->
+  <xsd:documentation>Type représentant un militaire</xsd:documentation>  <!-- pour les personnes -->
+  <xsd:appinfo>...</xsd:appinfo>                                          <!-- pour les outils -->
 </xsd:annotation>
 ```
 
-### 4.12 Using an XSD in an XML document
+### 4.12 Utiliser un XSD dans un document XML
 
 ```xml
 <tns:lettre xmlns:tns="http://www.example.org/bibliotheque"
@@ -613,30 +613,30 @@ A type is visible to all descendants of the node where it is declared.
 </tns:lettre>
 ```
 
-| Piece | Role |
+| Élément | Rôle |
 |---|---|
-| `xmlns:xsi` | the W3C "instance" namespace |
-| `xmlns:tns` | our namespace |
-| `xsi:schemaLocation` | pairs of *(namespace, file location of its XSD)* |
+| `xmlns:xsi` | l'espace de noms W3C « instance » |
+| `xmlns:tns` | notre espace de noms |
+| `xsi:schemaLocation` | paires *(espace de noms, emplacement de son XSD)* |
 
-Unlike a DTD, **any global element** of the XSD may serve as the document root.
+Contrairement à une DTD, **n'importe quel élément global** du XSD peut servir de racine au document.
 
-### 4.13 DTD vs XSD at a glance
+### 4.13 DTD vs XSD en un coup d'œil
 
 | | DTD | XSD |
 |---|---|---|
-| Syntax | own syntax | XML |
-| Data types | text only | 40+ types, custom types |
-| Occurrences | `? * +` | any `minOccurs/maxOccurs` |
-| Inheritance | no | extension / restriction |
-| Namespaces | poor | full |
-| Complexity | simple | verbose, powerful |
+| Syntaxe | propre | XML |
+| Types de données | texte seulement | plus de 40 types, types personnalisés |
+| Occurrences | `? * +` | tout `minOccurs/maxOccurs` |
+| Héritage | non | extension / restriction |
+| Espaces de noms | faible | complet |
+| Complexité | simple | verbeux, puissant |
 
 ---
 
-## 5. Namespaces
+## 5. Espaces de noms
 
-Purpose: use **several vocabularies in one document** and remove **name ambiguity** (two grammars both defining `<title>`).
+Objectif : utiliser **plusieurs vocabulaires dans un même document** et supprimer **l'ambiguïté des noms** (deux grammaires qui définissent toutes deux un `<title>`).
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -646,105 +646,105 @@ Purpose: use **several vocabularies in one document** and remove **name ambiguit
          http://www.springframework.org/schema/beans    spring-beans.xsd
          http://www.springframework.org/schema/context  spring-context.xsd">
 
-  <bean id="mapper" class="org.dozer.Mapper"/>       <!-- default namespace: beans -->
-  <context:component-scan base-package="spring.com"/> <!-- prefixed: context -->
+  <bean id="mapper" class="org.dozer.Mapper"/>       <!-- espace de noms par défaut : beans -->
+  <context:component-scan base-package="spring.com"/> <!-- avec préfixe : context -->
 </beans>
 ```
 
-Rules of thumb:
+Règles à retenir :
 
-- `xmlns="URI"` sets the **default** namespace (no prefix).
-- `xmlns:p="URI"` declares prefix `p`.
-- The **URI is the identity**; the prefix is just a local nickname.
-- The URI does not have to point to a real web page.
+- `xmlns="URI"` définit l'espace de noms **par défaut** (sans préfixe).
+- `xmlns:p="URI"` déclare le préfixe `p`.
+- **L'URI est l'identité** ; le préfixe n'est qu'un surnom local.
+- L'URI n'a pas besoin de pointer vers une vraie page web.
 
 ---
 
 ## 6. XPath
 
-XPath is a W3C standard to **identify nodes or sets of nodes** in an XML tree. It is the foundation of XSLT and XQuery.
+XPath est un standard W3C pour **identifier des nœuds ou des ensembles de nœuds** dans un arbre XML. C'est le fondement de XSLT et de XQuery.
 
-### 6.1 The data model
+### 6.1 Le modèle de données
 
 ```mermaid
 graph TD
-    R[root node] --> PI[processing-instruction]
-    R --> E1[element: root element]
-    E1 --> E2[element]
-    E2 --> AT[attribute]
-    E2 --> TX[text]
-    E2 --> NS[namespace]
-    E2 --> CM[comment]
+    R[nœud racine] --> PI[instruction de traitement]
+    R --> E1[élément : élément racine]
+    E1 --> E2[élément]
+    E2 --> AT[attribut]
+    E2 --> TX[texte]
+    E2 --> NS[espace de noms]
+    E2 --> CM[commentaire]
 ```
 
-Node kinds: **root, element, attribute, text, namespace, comment, processing-instruction**.
+Types de nœuds : **racine, élément, attribut, texte, espace de noms, commentaire, instruction de traitement**.
 
-### 6.2 Relations between nodes
+### 6.2 Relations entre nœuds
 
 ```mermaid
 graph TD
-    GP[ancestor] --> P[parent]
-    P --> ME["CONTEXT NODE"]
-    P --> SIB1[sibling]
-    P --> SIB2[sibling]
-    ME --> CH1[child]
-    ME --> CH2[child]
+    GP[ancêtre] --> P[parent]
+    P --> ME["NŒUD COURANT (contexte)"]
+    P --> SIB1[frère]
+    P --> SIB2[frère]
+    ME --> CH1[enfant]
+    ME --> CH2[enfant]
     CH1 --> D1[descendant]
 ```
 
-| Term | Meaning |
+| Terme | Signification |
 |---|---|
-| parent | containing element |
-| children | contained elements |
-| siblings | same parent |
-| ancestors | parent, grandparent, ... |
-| descendants | children, grandchildren, ... |
+| parent | élément qui contient |
+| enfants | éléments contenus |
+| frères | même parent |
+| ancêtres | parent, grand-parent, ... |
+| descendants | enfants, petits-enfants, ... |
 
-### 6.3 Path syntax
+### 6.3 Syntaxe des chemins
 
-A path is a list of **steps** separated by `/`, like a URL or file path.
+Un chemin est une liste d'**étapes** séparées par `/`, comme une URL ou un chemin de fichier.
 
 ```
 /annuaire/entree/nom
 ```
 
-Each step = **`axis :: node-test [predicate]`**
+Chaque étape = **`axe :: test-de-nœud [prédicat]`**
 
 ```
 child::entree[position()=1]
-└─axis─┘└test─┘└─predicate──┘
+└─axe─┘└test─┘└─prédicat──┘
 ```
 
-### 6.4 Abbreviated syntax (what you write daily)
+### 6.4 Syntaxe abrégée (celle qu'on écrit tous les jours)
 
-| Short | Long equivalent | Meaning |
+| Abrégé | Équivalent long | Signification |
 |---|---|---|
-| `nom` | `child::nom` | child element named nom |
-| `/` (start) | | from the root |
-| `//` | `/descendant-or-self::node()/` | anywhere below |
-| `.` | `self::node()` | current node |
+| `nom` | `child::nom` | élément enfant nommé nom |
+| `/` (au début) | | depuis la racine |
+| `//` | `/descendant-or-self::node()/` | n'importe où en dessous |
+| `.` | `self::node()` | nœud courant |
 | `..` | `parent::node()` | parent |
-| `@type` | `attribute::type` | attribute |
-| `*` | | any element |
-| `[3]` | `[position()=3]` | 3rd (**counting starts at 1**) |
+| `@type` | `attribute::type` | attribut |
+| `*` | | n'importe quel élément |
+| `[3]` | `[position()=3]` | 3e (**le comptage commence à 1**) |
 
-### 6.5 Examples on the annuaire
+### 6.5 Exemples sur l'annuaire
 
-| Expression | Result |
+| Expression | Résultat |
 |---|---|
-| `/annuaire/entree/nom` | both `nom` elements |
-| `//nom` | all `nom` anywhere |
+| `/annuaire/entree/nom` | les deux éléments `nom` |
+| `//nom` | tous les `nom`, où qu'ils soient |
 | `/annuaire/@type` | `pages blanches` |
-| `//entree[1]` | first entry |
-| `//entree[last()]` | last entry |
+| `//entree[1]` | première entrée |
+| `//entree[last()]` | dernière entrée |
 | `//entree[2]/nom/text()` | `Lorédan Larchey` |
-| `//entree[nom='Paul Lafargue']/telephone` | Paul's phone |
-| `//nom[contains(., 'Paul')]` | names containing Paul |
+| `//entree[nom='Paul Lafargue']/telephone` | téléphone de Paul |
+| `//nom[contains(., 'Paul')]` | noms contenant Paul |
 | `count(//entree)` | `2` |
-| `//entree[telephone]` | entries that have a phone |
-| `//entree/nom \| //entree/telephone` | union of two sets |
+| `//entree[telephone]` | entrées qui ont un téléphone |
+| `//entree/nom \| //entree/telephone` | union de deux ensembles |
 
-### 6.6 The 13 axes
+### 6.6 Les 13 axes
 
 ```
                       ancestor::
@@ -758,23 +758,23 @@ child::entree[position()=1]
                     descendant::
 ```
 
-| Axis | Selects |
+| Axe | Sélectionne |
 |---|---|
-| `child` | direct children (default axis) |
-| `descendant` | children, grandchildren, ... |
-| `descendant-or-self` | descendants + the node itself |
-| `parent` | the parent |
-| `ancestor` | parent, grandparent, ... |
-| `ancestor-or-self` | ancestors + itself |
-| `following-sibling` | later siblings |
-| `preceding-sibling` | earlier siblings |
-| `following` | everything after the node in document order (not descendants) |
-| `preceding` | everything before it (not ancestors) |
-| `attribute` | attributes |
-| `namespace` | namespace nodes |
-| `self` | the node itself |
+| `child` | enfants directs (axe par défaut) |
+| `descendant` | enfants, petits-enfants, ... |
+| `descendant-or-self` | descendants + le nœud lui-même |
+| `parent` | le parent |
+| `ancestor` | parent, grand-parent, ... |
+| `ancestor-or-self` | ancêtres + lui-même |
+| `following-sibling` | frères suivants |
+| `preceding-sibling` | frères précédents |
+| `following` | tout ce qui suit le nœud dans l'ordre du document (sauf descendants) |
+| `preceding` | tout ce qui le précède (sauf ancêtres) |
+| `attribute` | attributs |
+| `namespace` | nœuds d'espace de noms |
+| `self` | le nœud lui-même |
 
-**Worked example** (slides 76-77) on this document:
+**Exemple détaillé** (diapositives 76-77) sur ce document :
 
 ```xml
 <A>
@@ -783,45 +783,45 @@ child::entree[position()=1]
 </A>
 ```
 
-| Expression | Result |
+| Expression | Résultat |
 |---|---|
-| `A/B[1]/following::*` | 2nd `B` and everything inside it |
-| `A/B[2]/preceding::*` | 1st `B` and its children |
-| `A/B[1]/following::D` | the `<D>sample3</D>` |
-| `A/descendant::*` | every element under `A` |
+| `A/B[1]/following::*` | le 2e `B` et tout ce qu'il contient |
+| `A/B[2]/preceding::*` | le 1er `B` et ses enfants |
+| `A/B[1]/following::D` | le `<D>sample3</D>` |
+| `A/descendant::*` | tous les éléments sous `A` |
 
-### 6.7 Node tests
+### 6.7 Tests de nœud
 
-| Test | Example | Selects |
+| Test | Exemple | Sélectionne |
 |---|---|---|
-| name test | `child::nom` | elements named `nom` |
-| node-type test | `text()`, `comment()`, `node()`, `processing-instruction()` | by kind |
-| PI test | `processing-instruction('xml-stylesheet')` | that specific PI |
+| test de nom | `child::nom` | éléments nommés `nom` |
+| test de type de nœud | `text()`, `comment()`, `node()`, `processing-instruction()` | selon le type |
+| test d'instruction de traitement | `processing-instruction('xml-stylesheet')` | cette instruction précise |
 
-### 6.8 Predicates and functions
+### 6.8 Prédicats et fonctions
 
 ```
 //entree[position() = 2]
 //entree[position() > 1 and position() < 5]
-//para[@type = 'warning'][5]           (5th of the "warning" paras, filter first)
-//para[5][@type = 'warning']           (5th para, then keep it if warning)
+//para[@type = 'warning'][5]           (5e des para "warning", on filtre d'abord)
+//para[5][@type = 'warning']           (5e para, puis on le garde s'il est warning)
 child::*[self::chapter or self::appendix][position() = last()]
 ```
 
-| Group | Functions |
+| Groupe | Fonctions |
 |---|---|
-| Node set | `position()`, `last()`, `count()`, `id()` |
-| String | `contains()`, `starts-with()`, `substring()`, `string-length()`, `concat()`, `normalize-space()` |
-| Number | `sum()`, `round()`, `floor()`, `ceiling()` |
-| Boolean | `not()`, `true()`, `false()` |
+| Ensemble de nœuds | `position()`, `last()`, `count()`, `id()` |
+| Chaînes | `contains()`, `starts-with()`, `substring()`, `string-length()`, `concat()`, `normalize-space()` |
+| Nombres | `sum()`, `round()`, `floor()`, `ceiling()` |
+| Booléens | `not()`, `true()`, `false()` |
 
-> `[@type='warning'][5]` and `[5][@type='warning']` are **different**: each predicate filters the result of the previous one.
+> `[@type='warning'][5]` et `[5][@type='warning']` sont **différents** : chaque prédicat filtre le résultat du précédent.
 
 ---
 
-## 7. CSS on XML
+## 7. CSS sur XML
 
-CSS can format XML elements **by name** (you cannot restructure, only style). Link it with a processing instruction:
+CSS peut mettre en forme des éléments XML **par leur nom** (on ne peut pas restructurer, seulement styliser). On le relie avec une instruction de traitement :
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -837,42 +837,42 @@ nom:after { content: " : "; }
 telephone { display: inline; color: darkblue; }
 ```
 
-Important: XML elements have no default rendering, so set `display: block/inline` yourself.
+Important : les éléments XML n'ont pas de rendu par défaut, il faut donc définir soi-même `display: block/inline`.
 
 ---
 
 ## 8. XSLT
 
-XSLT transforms an XML source into **another document** (HTML, XML, text). The stylesheet is itself XML.
+XSLT transforme une source XML en **un autre document** (HTML, XML, texte). La feuille de style est elle-même du XML.
 
 ```mermaid
 flowchart LR
-    X[source.xml] --> P{{XSLT processor}}
-    S[style.xsl<br/>templates] --> P
-    P --> O[result: HTML / XML / text]
+    X[source.xml] --> P{{Processeur XSLT}}
+    S[style.xsl<br/>modèles] --> P
+    P --> O[résultat : HTML / XML / texte]
 ```
 
-### 8.1 Mental model
+### 8.1 Modèle mental
 
-1. The processor starts at the **root** of the source tree.
-2. It looks for a `<xsl:template match="...">` matching the current node.
-3. It runs that template's body. Literal tags are copied to output; `xsl:` instructions are executed.
-4. `<xsl:apply-templates/>` sends the children back to step 2.
+1. Le processeur démarre à la **racine** de l'arbre source.
+2. Il cherche un `<xsl:template match="...">` qui correspond au nœud courant.
+3. Il exécute le corps de ce modèle. Les balises littérales sont copiées en sortie ; les instructions `xsl:` sont exécutées.
+4. `<xsl:apply-templates/>` renvoie les enfants à l'étape 2.
 
 ```mermaid
 flowchart TD
-    A["Node in source tree"] --> B{"Find template whose match fits"}
-    B -->|several fit| C["priority, else most specific match"]
-    B --> D["Run template body"]
+    A["Nœud de l'arbre source"] --> B{"Trouver le modèle dont match convient"}
+    B -->|plusieurs conviennent| C["priority, sinon match le plus spécifique"]
+    B --> D["Exécuter le corps du modèle"]
     C --> D
     D --> E{"apply-templates ?"}
-    E -->|yes| A
-    E -->|no| F["Output written"]
+    E -->|oui| A
+    E -->|non| F["Sortie écrite"]
 ```
 
-### 8.2 Complete working example
+### 8.2 Exemple complet fonctionnel
 
-**Input `nombres.xml`:**
+**Entrée `nombres.xml` :**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -883,7 +883,7 @@ flowchart TD
 </liste_nombres>
 ```
 
-**Stylesheet `nombres.xsl`:**
+**Feuille de style `nombres.xsl` :**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -892,7 +892,7 @@ flowchart TD
 
   <xsl:output method="html" encoding="utf-8" indent="yes"/>
 
-  <!-- Template 1: the root list -->
+  <!-- Modèle 1 : la liste racine -->
   <xsl:template match="liste_nombres">
     <html>
       <body>
@@ -907,7 +907,7 @@ flowchart TD
     </html>
   </xsl:template>
 
-  <!-- Template 2: one number -->
+  <!-- Modèle 2 : un nombre -->
   <xsl:template match="nombre">
     <li>
       <xsl:value-of select="@valeur"/>
@@ -918,7 +918,7 @@ flowchart TD
 </xsl:stylesheet>
 ```
 
-**Output:**
+**Sortie :**
 
 ```html
 <html><body>
@@ -931,40 +931,40 @@ flowchart TD
 </body></html>
 ```
 
-Note the numeric sort (4, 12, 30). With `data-type="text"` it would be 12, 30, 4.
+Remarquez le tri numérique (4, 12, 30). Avec `data-type="text"`, on obtiendrait 12, 30, 4.
 
 ### 8.3 Structure
 
-| Element | Role |
+| Élément | Rôle |
 |---|---|
-| `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">` | Root (`<xsl:transform>` is a synonym) |
-| `<xsl:output method="html\|xml\|text" encoding indent doctype-public doctype-system>` | Output format; first child of the root |
-| `<xsl:template match="XPath" name="" priority="">` | A transformation rule |
+| `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">` | Racine (`<xsl:transform>` est un synonyme) |
+| `<xsl:output method="html\|xml\|text" encoding indent doctype-public doctype-system>` | Format de sortie ; premier enfant de la racine |
+| `<xsl:template match="XPath" name="" priority="">` | Une règle de transformation |
 
-Template attributes:
+Attributs de `template` :
 
-- `match`: XPath selecting the nodes the rule applies to
-- `name`: lets you call it directly with `<xsl:call-template name="..."/>`
-- `priority`: tie-breaker when several templates match
+- `match` : XPath sélectionnant les nœuds auxquels la règle s'applique
+- `name` : permet de l'appeler directement avec `<xsl:call-template name="..."/>`
+- `priority` : départage plusieurs modèles qui correspondent
 
-### 8.4 Instruction toolbox
+### 8.4 Boîte à outils des instructions
 
-**Extraction and output**
+**Extraction et sortie**
 
-| Instruction | Purpose | Example |
+| Instruction | Rôle | Exemple |
 |---|---|---|
-| `xsl:value-of` | insert text of an XPath | `<xsl:value-of select="@valeur"/>` |
-| `xsl:text` | literal text (keeps spaces) | `<xsl:text> : </xsl:text>` |
-| `xsl:apply-templates` | process nodes via matching templates (no `select` = all children) | `<xsl:apply-templates select="nombre"/>` |
-| `xsl:call-template` | call a named template | `<xsl:call-template name="one"/>` |
+| `xsl:value-of` | insérer le texte d'un XPath | `<xsl:value-of select="@valeur"/>` |
+| `xsl:text` | texte littéral (conserve les espaces) | `<xsl:text> : </xsl:text>` |
+| `xsl:apply-templates` | traiter des nœuds via les modèles correspondants (sans `select` = tous les enfants) | `<xsl:apply-templates select="nombre"/>` |
+| `xsl:call-template` | appeler un modèle nommé | `<xsl:call-template name="one"/>` |
 
-**Logic**
+**Logique**
 
 ```xml
-<!-- Loop -->
+<!-- Boucle -->
 <xsl:for-each select="nombre"> ... </xsl:for-each>
 
-<!-- If (no else!) -->
+<!-- If (pas de else !) -->
 <xsl:if test="@valeur &gt; 10">
   <xsl:apply-templates select="."/>
 </xsl:if>
@@ -978,24 +978,24 @@ Template attributes:
   <xsl:otherwise><xsl:apply-templates select="."/></xsl:otherwise>
 </xsl:choose>
 
-<!-- Sort (child of for-each or apply-templates) -->
+<!-- Sort (enfant de for-each ou d'apply-templates) -->
 <xsl:sort select="@valeur" data-type="number" order="descending" case-order="upper-first"/>
 ```
 
-Inside `test="..."`, write `&lt;` and `&gt;` because the stylesheet is XML.
+Dans `test="..."`, écrire `&lt;` et `&gt;` car la feuille de style est du XML.
 
-**Generating XML/HTML dynamically**
+**Générer du XML/HTML dynamiquement**
 
 ```xml
-<xsl:copy/>                                      <!-- copy current node (not its children) -->
+<xsl:copy/>                                      <!-- copie le nœud courant (pas ses enfants) -->
 <xsl:element name="lien">
   <xsl:attribute name="href">http://example.org</xsl:attribute>
-  Click
+  Cliquez
 </xsl:element>
-<!-- produces: <lien href="http://example.org">Click</lien> -->
+<!-- produit : <lien href="http://example.org">Cliquez</lien> -->
 ```
 
-### 8.5 Second full example: the annuaire as an HTML table
+### 8.5 Deuxième exemple complet : l'annuaire en tableau HTML
 
 ```xml
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -1028,31 +1028,31 @@ Inside `test="..."`, write `&lt;` and `&gt;` because the stylesheet is XML.
 
 | | `apply-templates` | `for-each` |
 |---|---|---|
-| Style | declarative, reusable rules | procedural loop |
-| Reuse | template can serve many places | logic is inline |
-| Best for | structured, recursive documents | simple lists |
+| Style | déclaratif, règles réutilisables | boucle procédurale |
+| Réutilisation | un modèle peut servir à plusieurs endroits | logique écrite sur place |
+| Idéal pour | documents structurés, récursifs | listes simples |
 
 ---
 
 ## 9. XQuery
 
-XQuery is the **query language for XML** (like SQL for tables). It embeds XPath and adds **FLWOR** expressions.
+XQuery est le **langage de requête pour XML** (comme SQL pour les tables). Il intègre XPath et ajoute les expressions **FLWOR**.
 
 ```mermaid
 flowchart LR
-    F["for<br/>iterate"] --> L["let<br/>bind"] --> W["where<br/>filter"] --> O["order by<br/>sort"] --> R["return<br/>output"]
+    F["for<br/>itérer"] --> L["let<br/>affecter"] --> W["where<br/>filtrer"] --> O["order by<br/>trier"] --> R["return<br/>produire"]
 ```
 
-### 9.1 Basic queries on the annuaire
+### 9.1 Requêtes de base sur l'annuaire
 
 ```xquery
-(: all names :)
+(: tous les noms :)
 for $e in doc("annuaire.xml")//entree
 return $e/nom
 ```
 
 ```xquery
-(: filter + sort + build new XML :)
+(: filtrer + trier + construire du nouveau XML :)
 for $e in doc("annuaire.xml")//entree
 where contains($e/nom, "Harry")
 order by $e/nom ascending
@@ -1064,7 +1064,7 @@ return
 ```
 
 ```xquery
-(: conditional :)
+(: conditionnelle :)
 for $e in doc("annuaire.xml")//entree
 return
   if ($e/nom = "Harry Cover")
@@ -1073,59 +1073,59 @@ return
 ```
 
 ```xquery
-(: aggregates :)
+(: agrégats :)
 let $all := doc("annuaire.xml")//entree
 return <total>{ count($all) }</total>
 ```
 
-### 9.2 Syntax to remember
+### 9.2 Syntaxe à retenir
 
-- Variables start with `$`.
-- `{ ... }` inside a constructed element means "evaluate this expression".
-- Comments: `(: comment :)`.
-- Keywords are **lowercase** in the standard.
+- Les variables commencent par `$`.
+- `{ ... }` dans un élément construit signifie « évaluer cette expression ».
+- Commentaires : `(: commentaire :)`.
+- Les mots-clés sont en **minuscules** dans le standard.
 
-### 9.3 Slides vs standard syntax (slide 107)
+### 9.3 Diapositives vs syntaxe standard (diapositive 107)
 
-| Slide (old draft) | Standard XQuery |
+| Diapositive (ancien brouillon) | XQuery standard |
 |---|---|
 | `FOR $nom IN //nom` | `for $nom in //nom` |
 | `RETURN` | `return` |
 | `SORTBY(nom ASCENDING)` | `order by $nom ascending` |
 | `AFTER //entree[1]` | `//entree[position() > 1]` |
 | `IF ... THEN ... ELSE` | `if (...) then ... else ...` |
-| `WHERE contains($entree/nom, "Harry")` | same, lowercase `where` |
+| `WHERE contains($entree/nom, "Harry")` | identique, `where` en minuscules |
 
 ### 9.4 XPath vs XSLT vs XQuery
 
 | | XPath | XSLT | XQuery |
 |---|---|---|---|
-| Purpose | select nodes | transform documents | query and build results |
-| Is XML syntax? | no | yes | no |
-| Style | expression | template rules | FLWOR expressions |
-| Typical use | inside the other two | XML → HTML | search / join / aggregate |
+| But | sélectionner des nœuds | transformer des documents | interroger et construire des résultats |
+| Syntaxe XML ? | non | oui | non |
+| Style | expression | règles de modèles | expressions FLWOR |
+| Usage typique | à l'intérieur des deux autres | XML → HTML | recherche / jointure / agrégation |
 
 ---
 
-## 10. Cheat Sheets
+## 10. Aide-mémoire
 
-### 10.1 Which technology, when?
+### 10.1 Quelle technologie, quand ?
 
 ```mermaid
 flowchart TD
-    Q{"What do I need?"}
-    Q -->|Check a file is correct| V{"Need data types?"}
-    V -->|no| DTD
-    V -->|yes| XSD
-    Q -->|Select or locate nodes| XPath
-    Q -->|Produce HTML from XML| XSLT
-    Q -->|Search / join / aggregate| XQuery
-    Q -->|Just colours and fonts| CSS
+    Q{"De quoi ai-je besoin ?"}
+    Q -->|Vérifier qu'un fichier est correct| V{"Besoin de types de données ?"}
+    V -->|non| DTD
+    V -->|oui| XSD
+    Q -->|Sélectionner ou localiser des nœuds| XPath
+    Q -->|Produire du HTML à partir du XML| XSLT
+    Q -->|Rechercher / joindre / agréger| XQuery
+    Q -->|Juste des couleurs et des polices| CSS
 ```
 
-### 10.2 Syntax comparison for the same idea: "a required text child"
+### 10.2 Comparaison de syntaxe pour une même idée : « un enfant texte obligatoire »
 
-| Tech | Code |
+| Techno | Code |
 |---|---|
 | XML | `<nom>Paul</nom>` |
 | DTD | `<!ELEMENT entree (nom)>` `<!ELEMENT nom (#PCDATA)>` |
@@ -1134,74 +1134,74 @@ flowchart TD
 | XSLT | `<xsl:value-of select="nom"/>` |
 | XQuery | `for $e in //entree return $e/nom` |
 
-### 10.3 Exam quick facts
+### 10.3 Faits essentiels pour l'examen
 
-- Root: exactly **one**
-- `standalone` default: **no**
-- XPath index starts at **1**
-- `minOccurs`/`maxOccurs` default: **1**
-- XSD attribute types: **simple only**
-- `simpleType`: no children, no attributes
-- DTD `,` = sequence, `|` = choice
-- XSLT `if` has **no else** (use `choose`)
-- XSLT namespace: `http://www.w3.org/1999/XSL/Transform`
-- XSD namespace: `http://www.w3.org/2001/XMLSchema`
-- `xsi:schemaLocation` = namespace + XSD location pairs
+- Racine : exactement **une**
+- `standalone` par défaut : **no**
+- L'indice XPath commence à **1**
+- `minOccurs`/`maxOccurs` par défaut : **1**
+- Types des attributs XSD : **simples uniquement**
+- `simpleType` : ni enfants, ni attributs
+- DTD : `,` = séquence, `|` = choix
+- XSLT : `if` n'a **pas de else** (utiliser `choose`)
+- Espace de noms XSLT : `http://www.w3.org/1999/XSL/Transform`
+- Espace de noms XSD : `http://www.w3.org/2001/XMLSchema`
+- `xsi:schemaLocation` = paires espace de noms + emplacement du XSD
 
 ---
 
-## 11. Corrections to the Slides
+## 11. Corrections des diapositives
 
-The slides contain a few inaccuracies worth knowing:
+Les diapositives contiennent quelques inexactitudes à connaître :
 
-| Slide | Says | Reality |
+| Diapositive | Dit | En réalité |
 |---|---|---|
-| 7 | `standalone` defaults to `yes` | Default is **`no`** |
-| 10 | Two attributes on a tag may share a name | **Not allowed**: not well-formed |
-| 6 | `<!DOCTYPE livre ...>` on an `annuaire` document | DOCTYPE name must equal the **root element** |
-| 6 | `<! DOCTYPE` with a space | Must be `<!DOCTYPE` with no space |
-| 11 | "characters `> < &` ... must be replaced by HTML encoding" | They are replaced by **XML entities** (`&lt;` `&gt;` `&amp;`); `>` is technically allowed but escaping is good practice |
-| 87 | "XLST" | The name is **XSLT** |
-| 107 | `SORTBY`, `AFTER`, uppercase `FOR/IN/RETURN` | Old draft syntax; use standard FLWOR |
+| 7 | `standalone` vaut `yes` par défaut | Par défaut c'est **`no`** |
+| 10 | Deux attributs d'une même balise peuvent porter le même nom | **Interdit** : le document n'est pas bien formé |
+| 6 | `<!DOCTYPE livre ...>` sur un document `annuaire` | Le nom du DOCTYPE doit être égal à l'**élément racine** |
+| 6 | `<! DOCTYPE` avec une espace | Il faut écrire `<!DOCTYPE` sans espace |
+| 11 | « les caractères `> < &` ... doivent être remplacés par leur encodage HTML » | Ils sont remplacés par des **entités XML** (`&lt;` `&gt;` `&amp;`) ; `>` est techniquement permis mais l'échapper est une bonne pratique |
+| 87 | « XLST » | Le nom correct est **XSLT** |
+| 107 | `SORTBY`, `AFTER`, `FOR/IN/RETURN` en majuscules | Syntaxe d'un ancien brouillon ; utiliser le FLWOR standard |
 
 ---
 
-## 12. Practice Plan
+## 12. Plan d'entraînement
 
-**Level 1: XML and DTD (30 min)**
-1. Write `annuaire.xml` with 3 entries.
-2. Write `annuaire.dtd` and add `<!DOCTYPE annuaire SYSTEM "annuaire.dtd">`.
-3. Break it on purpose (swap `nom` and `telephone`) and read the error.
+**Niveau 1 : XML et DTD (30 min)**
+1. Écrire `annuaire.xml` avec 3 entrées.
+2. Écrire `annuaire.dtd` et ajouter `<!DOCTYPE annuaire SYSTEM "annuaire.dtd">`.
+3. Le casser volontairement (échanger `nom` et `telephone`) et lire l'erreur.
 
-**Level 2: XSD (45 min)**
-1. Write `annuaire.xsd` with a `telephoneType` restricted by a `pattern` (`0[0-9]( [0-9]{2}){4}`).
-2. Add `use="required"` on the `type` attribute.
-3. Validate: `xmllint --noout --schema annuaire.xsd annuaire.xml`
+**Niveau 2 : XSD (45 min)**
+1. Écrire `annuaire.xsd` avec un `telephoneType` restreint par un `pattern` (`0[0-9]( [0-9]{2}){4}`).
+2. Ajouter `use="required"` sur l'attribut `type`.
+3. Valider : `xmllint --noout --schema annuaire.xsd annuaire.xml`
 
-**Level 3: XPath (45 min)**. Write expressions for:
-- the phone of "Paul Lafargue"
-- the last entry
-- every entry whose phone starts with `06 03`
-- the name of the entry *following* Paul (use `following-sibling`)
+**Niveau 3 : XPath (45 min)**. Écrire des expressions pour :
+- le téléphone de « Paul Lafargue »
+- la dernière entrée
+- chaque entrée dont le téléphone commence par `06 03`
+- le nom de l'entrée *qui suit* Paul (utiliser `following-sibling`)
 
-**Level 4: XSLT (1 h)**
-1. Produce an HTML table sorted by name.
-2. Add `xsl:if` to highlight numbers starting with `06 03`.
-3. Rewrite with `xsl:choose` for three colour categories.
+**Niveau 4 : XSLT (1 h)**
+1. Produire un tableau HTML trié par nom.
+2. Ajouter `xsl:if` pour mettre en évidence les numéros commençant par `06 03`.
+3. Réécrire avec `xsl:choose` pour trois catégories de couleurs.
 
-**Level 5: XQuery (30 min)**
-1. Rewrite the level 3 queries in FLWOR.
-2. Return `<contact><n>...</n></contact>` elements sorted descending.
+**Niveau 5 : XQuery (30 min)**
+1. Réécrire les requêtes du niveau 3 en FLWOR.
+2. Retourner des éléments `<contact><n>...</n></contact>` triés en ordre décroissant.
 
-**Useful tools:** `xmllint`, `xsltproc`, Saxon (XSLT and XQuery), VS Code with XML extension, browser dev tools (`$x("//nom")` runs XPath in the console).
+**Outils utiles :** `xmllint`, `xsltproc`, Saxon (XSLT et XQuery), VS Code avec l'extension XML, outils développeur du navigateur (`$x("//nom")` exécute du XPath dans la console).
 
 ```bash
-xmllint --noout --dtdvalid annuaire.dtd annuaire.xml     # validate with DTD
-xmllint --noout --schema annuaire.xsd annuaire.xml       # validate with XSD
-xmllint --xpath "//entree[1]/nom" annuaire.xml           # run XPath
-xsltproc annuaire.xsl annuaire.xml > annuaire.html       # run XSLT
+xmllint --noout --dtdvalid annuaire.dtd annuaire.xml     # valider avec une DTD
+xmllint --noout --schema annuaire.xsd annuaire.xml       # valider avec un XSD
+xmllint --xpath "//entree[1]/nom" annuaire.xml           # exécuter du XPath
+xsltproc annuaire.xsl annuaire.xml > annuaire.html       # exécuter du XSLT
 ```
 
 ---
 
-*End of guide.*
+*Fin du guide.*
