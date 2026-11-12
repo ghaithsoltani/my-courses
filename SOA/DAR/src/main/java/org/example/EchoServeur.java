@@ -1,28 +1,35 @@
 package org.example;
-
 import java.io.*;
 import java.net.*;
 
+/**
+ * Exercice 1 - Serveur d'écho (port 5000).
+ * Pour chaque client : accept -> lit UNE ligne -> renvoie "ECHO: ligne" -> ferme -> client suivant.
+ */
 public class EchoServeur {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         try (ServerSocket serveur = new ServerSocket(5000)) {
-            System.out.println("EchoServeur en écoute sur le port 5000...");
+            System.out.println("EchoServeur en attente sur le port 5000...");
 
-            while (true) {
+            while (true) { // boucle pour accepter un nouveau client apres chaque fermeture
                 try (Socket client = serveur.accept();
-                     BufferedReader in = new BufferedReader(
+                     BufferedReader entree = new BufferedReader(
                              new InputStreamReader(client.getInputStream()));
-                     PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
+                     PrintWriter sortie = new PrintWriter(client.getOutputStream(), true)) {
 
-                    System.out.println("Client connecté : " + client.getInetAddress());
+                    System.out.println("Client connecte : " + client.getInetAddress());
 
-                    String ligne = in.readLine();
+                    String ligne = entree.readLine();      // lit une ligne
                     if (ligne != null) {
-                        out.println("ECHO: " + ligne);
+                        sortie.println("ECHO: " + ligne);  // la renvoie prefixee par ECHO:
                     }
+                    // la fin du try ferme automatiquement le socket client
+                } catch (IOException e) {
+                    System.out.println("Erreur avec un client : " + e.getMessage());
                 }
-                System.out.println("Client déconnecté.");
             }
+        } catch (IOException e) {
+            System.out.println("Impossible de demarrer le serveur : " + e.getMessage());
         }
     }
 }
