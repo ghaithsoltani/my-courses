@@ -10,8 +10,7 @@ public class EchoClient {
     public static void main(String[] args) {
         try (Socket socket = new Socket("localhost", 5000);
              BufferedReader clavier = new BufferedReader(new InputStreamReader(System.in));
-             BufferedReader entree = new BufferedReader(
-                     new InputStreamReader(socket.getInputStream()));
+             BufferedReader entree = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter sortie = new PrintWriter(socket.getOutputStream(), true)) {
 
             System.out.print("Entrez une phrase : ");
