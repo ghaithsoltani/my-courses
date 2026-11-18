@@ -25,8 +25,9 @@ public class CarreClient {
                 if (ligne == null) {                 // fin de saisie clavier (Ctrl+D / Ctrl+Z)
                     break;
                 }
-
                 sortie.println(ligne);               // on envoie TOUT au serveur (meme du texte) :
+
+
                 // c'est lui qui valide la saisie
                 String reponse = entree.readLine();
                 if (reponse == null) {               // seul cas ou le serveur a vraiment coupe
